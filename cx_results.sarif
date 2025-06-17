@@ -1,0 +1,3096 @@
+{
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "SAST",
+          "guid": "79cc9d1f-6183-4e37-8656-ef1a16dac7eb",
+          "notifications": [
+            {
+              "id": "SAST-PARTIAL-FILES-LANG",
+              "guid": "228b21e5-4003-4939-9b85-3b458fbf12d5",
+              "name": "SastPartialFilesByLanguage",
+              "messageStrings": {
+                "language": {
+                  "text": "JavaScript"
+                },
+                "partiallyGoodFiles": {
+                  "text": "2"
+                }
+              },
+              "shortDescription": {
+                "text": "Some files were only partially parsed during the scan."
+              }
+            }
+          ],
+          "organization": "Checkmarx",
+          "properties": {
+            "scanMetrics": {
+              "scanId": "bfd04472-1a92-4426-ab7e-e55064a186ac",
+              "memoryPeak": 3228,
+              "virtualMemoryPeak": 62550,
+              "totalScannedFilesCount": 324,
+              "totalScannedLoc": 20295,
+              "domObjectsPerLanguage": {
+                "JavaScript": 95557
+              },
+              "successfullLocPerLanguage": {
+                "JavaScript": 22054
+              },
+              "failedLocPerLanguage": null,
+              "fileCountOfDetectedButNotScannedLanguages": null,
+              "scannedFilesPerLanguage": {
+                "JavaScript": {
+                  "goodFiles": 322,
+                  "partiallyGoodFiles": 2,
+                  "badFiles": 0
+                }
+              }
+            }
+          },
+          "rules": [
+            {
+              "id": "JavaScript_Server_Side_Vulnerabilities.Stored_XSS",
+              "help": {
+                "text": "*   Fully encode all dynamic data, regardless of source, before embedding it in output.\r\n*   Encoding should be context-sensitive. For example:\r\n    *   HTML encoding for HTML content\r\n    *   HTML Attribute encoding for data output to attribute values\r\n    *   JavaScript encoding for server-generated JavaScript\r\n*   It is recommended to use the platform-provided encoding functionality, or known security libraries for encoding output.\r\n*   Implement a Content Security Policy (CSP) with explicit whitelists for the application's resources only.\u00a0\r\n*   As an extra layer of protection, validate all untrusted data, regardless of source (note this is not a replacement for encoding). Validation should be based on a whitelist: accept only data fitting a specified structure, rather than reject bad patterns. Check for:\r\n    *   Data type\r\n    *   Size\r\n    *   Range\r\n    *   Format\r\n    *   Expected values\r\n*   In the `Content-Type` HTTP response header, explicitly define character encoding (charset) for the entire page.\u00a0\r\n*   Set the `HTTPOnly` flag on the session cookie for \"Defense in Depth\", to prevent any successful XSS exploits from stealing the cookie.\n\n"
+              },
+              "name": "StoredXss",
+              "properties": {
+                "queryID": 6561501369275698122
+              },
+              "fullDescription": {
+                "text": "A successful XSS exploit would allow an attacker to rewrite web pages and insert malicious scripts which would alter the intended output. This could include HTML fragments, CSS styling rules, arbitrary JavaScript, or references to third party code. An attacker could use this to steal users' passwords, collect personal data such as credit card details, provide false information, or run malware. From the victim\u2019s point of view, this is performed by the genuine website, and the victim would blame the site for incurred damage.\n\nAn attacker could use legitimate access to the application to submit modified data to the application\u2019s data-store. This would then be used to construct the returned web page, triggering the attack.\n\n"
+              },
+              "shortDescription": {
+                "text": "The application creates web pages that include untrusted data, whether from user input, the application\u2019s database, or from other external sources. The untrusted data is embedded directly in the page's HTML, causing the browser to display it as part of the web page. If the input includes HTML fragments or JavaScript, these are displayed too, and the user cannot tell that this is not the intended page. The vulnerability is the result of directly embedding arbitrary data without first encoding it in a format that would prevent the browser from treating it like HTML or code instead of plain text.\n\nIn order to exploit this vulnerability, an attacker would load the malicious payload into the data-store, typically via regular forms on other web pages. Afterwards, the application reads this data from the data-store, and embeds it within the web page as displayed for another user.\n\n"
+              }
+            },
+            {
+              "id": "JavaScript_Server_Side_Vulnerabilities.SQL_Injection",
+              "help": {
+                "text": "*   Validate all untrusted data, regardless of source. Validation should be based on a whitelist: accept only data fitting a specified structure, rather than reject bad patterns.\u00a0\r\n*   In particular, check for:\r\n    *   Data type\r\n    *   Size\r\n    *   Range\r\n    *   Format\r\n    *   Expected values.\r\n*   Restrict access to database objects and functionality, according to the Principle of Least Privilege.\r\n*   Do not use dynamically concatenate strings to construct SQL queries.\u00a0\r\n*   Prefer using DB Stored Procedures for all data access, instead of ad-hoc dynamic queries.\u00a0\r\n*   Instead of unsafe string concatenation, use secure database components such as parameterized queries and object bindings (for example, commands and parameters).\u00a0\r\n*   Alternatively, an even better solution is to use an ORM library, in order to pre-define and encapsulate the allowed commands enabled for the application, instead of dynamically accessing the database directly. In this way the code plane and data plane should be isolated from each other.\n\n"
+              },
+              "name": "SqlInjection",
+              "properties": {
+                "queryID": 17606990743818532616
+              },
+              "fullDescription": {
+                "text": "An attacker could directly access all of the system's data. The attacker would likely be able to steal any sensitive information stored by the system, including private user information, credit card details, proprietary business data, and any other secret data. Likewise, the attacker could possibly modify or erase existing data, or even add new bogus data. In some scenarios, it may even be possible to execute code on the database.\u00a0\r\n\r\nIn addition to disclosing or altering confidential information directly, this vulnerability might also be used to achieve secondary effects, such as bypassing authentication, subverting security checks, or forging a data trail.\u00a0\r\n\r\nFurther increasing the likelihood of exploit is the fact that this flaw is easy for attackers to find, and easy to exploit.\n\n"
+              },
+              "shortDescription": {
+                "text": "The application stores and manages data in a database, by submitting a textual SQL query to the database engine for processing. The application creates the query by simple string concatenation, embedding untrusted data. However, there is no separation between data and code; furthermore, the embedded data is neither checked for data type validity nor subsequently sanitized. Thus, the untrusted data could contain SQL commands, or modify the intended query. The database would interpret the altered query and commands as if they originated from the application, and execute them accordingly.\n\nNote that an attacker can exploit this vulnerability either by modifying the URL, or by submitting malicious data in the user input or other request fields.\n\n"
+              }
+            },
+            {
+              "id": "JavaScript_Medium_Threat.Missing_HSTS_Header",
+              "help": {
+                "text": "*   Before setting the HSTS header - consider the implications it may have:\n    *   Forcing HTTPS will prevent any future use of HTTP, which could hinder some testing\n    *   Disabling HSTS is not trivial, as once it is disabled on the site, it must also be disabled on the browser\n*   Set the HSTS header either explicitly within application code, or using web-server configurations.\n*   Ensure the \"max-age\" value for HSTS headers is set to 31536000 to ensure HSTS is strictly enforced for at least one year.\n*   Include the \"includeSubDomains\" to maximize HSTS coverage, and ensure HSTS is enforced on all sub-domains under the current domain\n    *   Note that this may prevent secure browser access to any sub-domains that utilize HTTP; however, use of HTTP is very severe and highly discouraged, even for websites that do not contain any sensitive information, as their contents can still be tampered via Man-in-the-Middle attacks to phish users under the HTTP domain.\n*   Once HSTS has been enforced, submit the web-application's\u00a0address to an HSTS preload list - this will ensure that, even if a client is accessing the web-application for the first time (implying HSTS has not yet been set by the web-application), a browser that respects the HSTS preload list would still treat the web-application as if it had already issued an HSTS header. Note that this requires the server to have a trusted SSL certificate, and issue an HSTS header with a maxAge of 1 year (31536000)\n*   Note that\u00a0this query is designed to return one result per application. This means that if more than one vulnerable response without an HSTS header is identified, only the first identified instance of this issue will be highlighted as a result. If a misconfigured instance of HSTS is identified (has a short lifespan, or is missing the \"includeSubDomains\" flag), that result will be flagged. Since HSTS is required to be enforced across the entire application to be considered a secure deployment of HSTS functionality, fixing this issue only where the query highlights this result is likely to produce subsequent results in other sections of the application; therefore, when adding this header via code, ensure it is uniformly deployed across the entire application. If this header is added via configuration, ensure that this configuration applies to the entire application.\n*   Note that misconfigured HSTS headers that do not contain the recommended max-age value of at least one year or the \"includeSubDomains\" flag will still return a result for a missing HSTS header.\n\n"
+              },
+              "name": "MissingHstsHeader",
+              "properties": {
+                "queryID": 7630264517191277634
+              },
+              "fullDescription": {
+                "text": "Failure to set an HSTS header and provide it with a reasonable \"max-age\" value of at least one year may leave users vulnerable to Man-in-the-Middle attacks.\n\n"
+              },
+              "shortDescription": {
+                "text": "Many users browse to websites by simply typing the domain name into the address bar, without the protocol prefix. The browser will automatically assume that the user's intended protocol is HTTP, instead of the\u00a0encrypted HTTPS protocol.\r\n\r\nWhen this initial request is made, an attacker can perform a Man-in-the-Middle attack and manipulate it to redirect users to a malicious web-site of the attacker's choosing. To protect the user from such an occurence, the HTTP Strict Transport Security (HSTS) header instructs the user's browser to disallow use of an unsecure HTTP connection to the the domain associated with the HSTS header.\r\n\r\nOnce\u00a0a browser that supports the HSTS feature has visited a web-site and the header was set, it will no longer allow\u00a0communicating with the domain over an HTTP connection.\r\n\r\nOnce an HSTS header was issued for a specific website, the browser is also instructed\u00a0to prevent users from manually overriding and accepting an untrusted SSL certificate for as long as the \"max-age\" value still applies. The recommended \"max-age\" value is for at least one year in seconds, or 31536000.\n\n"
+              }
+            },
+            {
+              "id": "JavaScript_Angular.Angular_Usage_of_Unsafe_DOM_Sanitizer",
+              "help": {
+                "text": "*   Do not inject raw web-code by removing security measures from trusted values; instead, construct these elements programmatically.\r\n*   Do not globally declare dangerous objects or methods in Angular, as they may be accessible to interpolated code."
+              },
+              "name": "AngularUsageOfUnsafeDomSanitizer",
+              "properties": {
+                "queryID": 2211341642471709656
+              },
+              "fullDescription": {
+                "text": "Use of classes that override sanitization of output in a client-side context may expose applications to cross-site scripting (XSS) attacks."
+              },
+              "shortDescription": {
+                "text": "Using a library that is explicitly intended to bypass security measures, such as output encoding, is likely to put an application at risk. In some contexts, this may allow attackers to conduct elaborate cross-site scripting (XSS) attacks, exploiting incorrect uses of a dangerous method or object to attack otherwise secure code.\r\n\r\nFor example, in Angular, a globally declared\u00a0DomSanitizer can be accessed and used by interpolated code; had this object not been declared, it could not have been invoked from interpolated code on its own, raising the risk caused by successful injection of interpolated code. Without the DomSanitizer, an attacker's impact may have been limited. With the DomSanitizer, this is likely to allow a cross-site scripting (XSS) attack."
+              }
+            }
+          ],
+          "fullName": "Checkmarx SAST 9.7.3",
+          "informationUri": "https://checkmarx.com/resource/documents/en/34965-67042-checkmarx-one.html",
+          "productSuite": "CheckmarxOne",
+          "semanticVersion": "9.7.3",
+          "shortDescription": {
+            "text": "Static code analysis scanner."
+          }
+        },
+        "properties": {
+          "scanMetadata": {
+            "scanId": "bfd04472-1a92-4426-ab7e-e55064a186ac",
+            "projectId": "34447a4f-def0-4cca-b6f9-ff5aece8604b",
+            "loc": 118597,
+            "fileCount": 1050,
+            "isIncremental": false,
+            "isIncrementalCanceled": false,
+            "queryPreset": "Base Preset"
+          }
+        }
+      },
+      "results": [
+        {
+          "message": {
+            "markdown": "The method **Lambda** embeds untrusted data in generated output with **send**, at line **97** of **/routes/userProfile.ts**. This untrusted data is embedded into the output without proper sanitization or encoding, enabling an attacker to inject malicious code into the generated web-page.\n\nThe attacker would be able to alter the returned web page by saving malicious data in a data-store ahead of time. The attacker's modified data is then read from the database by the **favicon** method with **get**, at line **22** of **/routes/userProfile.ts**. This untrusted data then flows through the code straight to the output web page, without sanitization.\u00a0\r\n\r\nThis can enable a Stored Cross-Site Scripting (XSS) attack.\n\n",
+            "text": "The method Lambda embeds untrusted data in generated output with send, at line 97 of /routes/userProfile.ts. This untrusted data is embedded into the output without proper sanitization or encoding, enabling an attacker to inject malicious code into the generated web-page.\n\nThe attacker would be able to alter the returned web page by saving malicious data in a data-store ahead of time. The attacker's modified data is then read from the database by the favicon method with get, at line 22 of /routes/userProfile.ts. This untrusted data then flows through the code straight to the output web page, without sanitization.\u00a0\r\n\r\nThis can enable a Stored Cross-Site Scripting (XSS) attack.\n\n"
+          },
+          "locations": [
+            {
+              "id": 0,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "favicon",
+                    "methodLine": 21,
+                    "domType": "MethodInvokeExpr",
+                    "nodeID": 155395,
+                    "fullName": "CxJSNS_2575a474.config.get"
+                  },
+                  "endColumn": 42,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 39,
+                  "startLine": 22
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/userProfile.ts"
+                }
+              }
+            },
+            {
+              "id": 1,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "favicon",
+                    "methodLine": 21,
+                    "domType": "MethodInvokeExpr",
+                    "nodeID": 155388,
+                    "fullName": "CxJSNS_2575a474.utils.extractFilename"
+                  },
+                  "endColumn": 31,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 16,
+                  "startLine": 22
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/userProfile.ts"
+                }
+              }
+            },
+            {
+              "id": 2,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 26,
+                    "domType": "MethodInvokeExpr",
+                    "nodeID": 155943,
+                    "fullName": "CxJSNS_2575a474.favicon"
+                  },
+                  "endColumn": 54,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 47,
+                  "startLine": 78
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/userProfile.ts"
+                }
+              }
+            },
+            {
+              "id": 3,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 26,
+                    "domType": "MethodInvokeExpr",
+                    "nodeID": 155929,
+                    "fullName": "CxJSNS_2575a474.getUserProfile.Lambda.template.replace"
+                  },
+                  "endColumn": 32,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 25,
+                  "startLine": 78
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/userProfile.ts"
+                }
+              }
+            },
+            {
+              "id": 4,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 26,
+                    "domType": "UnknownReference",
+                    "nodeID": 155946,
+                    "fullName": "CxJSNS_2575a474.getUserProfile.Lambda.template"
+                  },
+                  "endColumn": 13,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 5,
+                  "startLine": 78
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/userProfile.ts"
+                }
+              }
+            },
+            {
+              "id": 5,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 26,
+                    "domType": "UnknownReference",
+                    "nodeID": 155949,
+                    "fullName": "CxJSNS_2575a474.getUserProfile.Lambda.template"
+                  },
+                  "endColumn": 24,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 16,
+                  "startLine": 79
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/userProfile.ts"
+                }
+              }
+            },
+            {
+              "id": 6,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 26,
+                    "domType": "MethodInvokeExpr",
+                    "nodeID": 155952,
+                    "fullName": "CxJSNS_2575a474.getUserProfile.Lambda.template.replace"
+                  },
+                  "endColumn": 32,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 25,
+                  "startLine": 79
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/userProfile.ts"
+                }
+              }
+            },
+            {
+              "id": 7,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 26,
+                    "domType": "UnknownReference",
+                    "nodeID": 155966,
+                    "fullName": "CxJSNS_2575a474.getUserProfile.Lambda.template"
+                  },
+                  "endColumn": 13,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 5,
+                  "startLine": 79
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/userProfile.ts"
+                }
+              }
+            },
+            {
+              "id": 8,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 26,
+                    "domType": "UnknownReference",
+                    "nodeID": 155969,
+                    "fullName": "CxJSNS_2575a474.getUserProfile.Lambda.template"
+                  },
+                  "endColumn": 24,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 16,
+                  "startLine": 80
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/userProfile.ts"
+                }
+              }
+            },
+            {
+              "id": 9,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 26,
+                    "domType": "MethodInvokeExpr",
+                    "nodeID": 155972,
+                    "fullName": "CxJSNS_2575a474.getUserProfile.Lambda.template.replace"
+                  },
+                  "endColumn": 32,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 25,
+                  "startLine": 80
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/userProfile.ts"
+                }
+              }
+            },
+            {
+              "id": 10,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 26,
+                    "domType": "UnknownReference",
+                    "nodeID": 155986,
+                    "fullName": "CxJSNS_2575a474.getUserProfile.Lambda.template"
+                  },
+                  "endColumn": 13,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 5,
+                  "startLine": 80
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/userProfile.ts"
+                }
+              }
+            },
+            {
+              "id": 11,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 26,
+                    "domType": "UnknownReference",
+                    "nodeID": 155989,
+                    "fullName": "CxJSNS_2575a474.getUserProfile.Lambda.template"
+                  },
+                  "endColumn": 24,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 16,
+                  "startLine": 81
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/userProfile.ts"
+                }
+              }
+            },
+            {
+              "id": 12,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 26,
+                    "domType": "MethodInvokeExpr",
+                    "nodeID": 155992,
+                    "fullName": "CxJSNS_2575a474.getUserProfile.Lambda.template.replace"
+                  },
+                  "endColumn": 32,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 25,
+                  "startLine": 81
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/userProfile.ts"
+                }
+              }
+            },
+            {
+              "id": 13,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 26,
+                    "domType": "UnknownReference",
+                    "nodeID": 156006,
+                    "fullName": "CxJSNS_2575a474.getUserProfile.Lambda.template"
+                  },
+                  "endColumn": 13,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 5,
+                  "startLine": 81
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/userProfile.ts"
+                }
+              }
+            },
+            {
+              "id": 14,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 26,
+                    "domType": "UnknownReference",
+                    "nodeID": 156009,
+                    "fullName": "CxJSNS_2575a474.getUserProfile.Lambda.template"
+                  },
+                  "endColumn": 24,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 16,
+                  "startLine": 82
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/userProfile.ts"
+                }
+              }
+            },
+            {
+              "id": 15,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 26,
+                    "domType": "MethodInvokeExpr",
+                    "nodeID": 156012,
+                    "fullName": "CxJSNS_2575a474.getUserProfile.Lambda.template.replace"
+                  },
+                  "endColumn": 32,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 25,
+                  "startLine": 82
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/userProfile.ts"
+                }
+              }
+            },
+            {
+              "id": 16,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 26,
+                    "domType": "UnknownReference",
+                    "nodeID": 156026,
+                    "fullName": "CxJSNS_2575a474.getUserProfile.Lambda.template"
+                  },
+                  "endColumn": 13,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 5,
+                  "startLine": 82
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/userProfile.ts"
+                }
+              }
+            },
+            {
+              "id": 17,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 26,
+                    "domType": "UnknownReference",
+                    "nodeID": 156029,
+                    "fullName": "CxJSNS_2575a474.getUserProfile.Lambda.template"
+                  },
+                  "endColumn": 24,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 16,
+                  "startLine": 83
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/userProfile.ts"
+                }
+              }
+            },
+            {
+              "id": 18,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 26,
+                    "domType": "MethodInvokeExpr",
+                    "nodeID": 156032,
+                    "fullName": "CxJSNS_2575a474.getUserProfile.Lambda.template.replace"
+                  },
+                  "endColumn": 32,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 25,
+                  "startLine": 83
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/userProfile.ts"
+                }
+              }
+            },
+            {
+              "id": 19,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 26,
+                    "domType": "UnknownReference",
+                    "nodeID": 156046,
+                    "fullName": "CxJSNS_2575a474.getUserProfile.Lambda.template"
+                  },
+                  "endColumn": 13,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 5,
+                  "startLine": 83
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/userProfile.ts"
+                }
+              }
+            },
+            {
+              "id": 20,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 26,
+                    "domType": "UnknownReference",
+                    "nodeID": 156049,
+                    "fullName": "CxJSNS_2575a474.getUserProfile.Lambda.template"
+                  },
+                  "endColumn": 24,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 16,
+                  "startLine": 84
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/userProfile.ts"
+                }
+              }
+            },
+            {
+              "id": 21,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 26,
+                    "domType": "MethodInvokeExpr",
+                    "nodeID": 156052,
+                    "fullName": "CxJSNS_2575a474.getUserProfile.Lambda.template.replace"
+                  },
+                  "endColumn": 32,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 25,
+                  "startLine": 84
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/userProfile.ts"
+                }
+              }
+            },
+            {
+              "id": 22,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 26,
+                    "domType": "UnknownReference",
+                    "nodeID": 156079,
+                    "fullName": "CxJSNS_2575a474.getUserProfile.Lambda.template"
+                  },
+                  "endColumn": 13,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 5,
+                  "startLine": 84
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/userProfile.ts"
+                }
+              }
+            },
+            {
+              "id": 23,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 26,
+                    "domType": "UnknownReference",
+                    "nodeID": 156089,
+                    "fullName": "CxJSNS_2575a474.getUserProfile.Lambda.template"
+                  },
+                  "endColumn": 36,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 28,
+                  "startLine": 86
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/userProfile.ts"
+                }
+              }
+            },
+            {
+              "id": 24,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 26,
+                    "domType": "MethodInvokeExpr",
+                    "nodeID": 156085,
+                    "fullName": "CxJSNS_2575a474.pug.compile"
+                  },
+                  "endColumn": 27,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 20,
+                  "startLine": 86
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/userProfile.ts"
+                }
+              }
+            },
+            {
+              "id": 25,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 26,
+                    "domType": "UnknownReference",
+                    "nodeID": 156090,
+                    "fullName": "CxJSNS_2575a474.getUserProfile.Lambda.fn"
+                  },
+                  "endColumn": 13,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 11,
+                  "startLine": 86
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/userProfile.ts"
+                }
+              }
+            },
+            {
+              "id": 26,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 26,
+                    "domType": "MethodInvokeExpr",
+                    "nodeID": 156181,
+                    "fullName": "CxJSNS_2575a474.getUserProfile.Lambda.fn"
+                  },
+                  "endColumn": 16,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 14,
+                  "startLine": 97
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/userProfile.ts"
+                }
+              }
+            },
+            {
+              "id": 27,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 26,
+                    "domType": "MethodInvokeExpr",
+                    "nodeID": 156175,
+                    "fullName": "CxJSNS_2575a474.getUserProfile.Lambda.res.send"
+                  },
+                  "endColumn": 13,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 9,
+                  "startLine": 97
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/userProfile.ts"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "state": "TO_VERIFY",
+            "status": "NEW",
+            "severity": "CRITICAL",
+            "queryID": 6561501369275698122,
+            "foundAt": "2025-06-17T12:45:30Z",
+            "firstScanID": "c9114bfc-a403-4297-ad4f-1c30f2fe5b8d",
+            "firstFoundAt": "2025-06-17T12:45:30Z",
+            "cweID": 79,
+            "cvssScore": 9.4203,
+            "confidenceLevel": 0,
+            "compliances": [
+              "Top Tier",
+              "FISMA 2014",
+              "SANS top 25",
+              "MOIS(KISA) Secure Coding 2021",
+              "ASA Premium",
+              "ASD STIG 6.1",
+              "OWASP Mobile Top 10 2024",
+              "OWASP Top 10 2021",
+              "PCI DSS v4.0",
+              "Base Preset",
+              "PCI DSS v3.2.1",
+              "NIST SP 800-53",
+              "CWE top 25",
+              "OWASP Top 10 2017",
+              "OWASP ASVS",
+              "OWASP Top 10 2013"
+            ]
+          },
+          "hostedViewerUri": "https://deu.ast.checkmarx.net/sast-results/34447a4f-def0-4cca-b6f9-ff5aece8604b/bfd04472-1a92-4426-ab7e-e55064a186ac?resultId=k1IaRjk3dKH6dECs5mMXIbWrbzM%3D",
+          "partialFingerprints": {
+            "similarityID": "-225188974",
+            "queryKey": "JavaScript_Server_Side_Vulnerabilities.Stored_XSS",
+            "nodeFilePathsSha256": "7275218556846278d618d054c46f2743b66644b363b017ba0f7823924fa136de"
+          },
+          "ruleId": "JavaScript_Server_Side_Vulnerabilities.Stored_XSS"
+        },
+        {
+          "message": {
+            "markdown": "The method **Lambda** embeds untrusted data in generated output with **send**, at line **97** of **/routes/userProfile.ts**. This untrusted data is embedded into the output without proper sanitization or encoding, enabling an attacker to inject malicious code into the generated web-page.\n\nThe attacker would be able to alter the returned web page by saving malicious data in a data-store ahead of time. The attacker's modified data is then read from the database by the **Lambda** method with **get**, at line **84** of **/routes/userProfile.ts**. This untrusted data then flows through the code straight to the output web page, without sanitization.\u00a0\r\n\r\nThis can enable a Stored Cross-Site Scripting (XSS) attack.\n\n",
+            "text": "The method Lambda embeds untrusted data in generated output with send, at line 97 of /routes/userProfile.ts. This untrusted data is embedded into the output without proper sanitization or encoding, enabling an attacker to inject malicious code into the generated web-page.\n\nThe attacker would be able to alter the returned web page by saving malicious data in a data-store ahead of time. The attacker's modified data is then read from the database by the Lambda method with get, at line 84 of /routes/userProfile.ts. This untrusted data then flows through the code straight to the output web page, without sanitization.\u00a0\r\n\r\nThis can enable a Stored Cross-Site Scripting (XSS) attack.\n\n"
+          },
+          "locations": [
+            {
+              "id": 0,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 26,
+                    "domType": "MethodInvokeExpr",
+                    "nodeID": 156074,
+                    "fullName": "CxJSNS_2575a474.config.get"
+                  },
+                  "endColumn": 76,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 73,
+                  "startLine": 84
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/userProfile.ts"
+                }
+              }
+            },
+            {
+              "id": 1,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 26,
+                    "domType": "MethodInvokeExpr",
+                    "nodeID": 156067,
+                    "fullName": "CxJSNS_2575a474.utils.extractFilename"
+                  },
+                  "endColumn": 65,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 50,
+                  "startLine": 84
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/userProfile.ts"
+                }
+              }
+            },
+            {
+              "id": 2,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 26,
+                    "domType": "MethodInvokeExpr",
+                    "nodeID": 156052,
+                    "fullName": "CxJSNS_2575a474.getUserProfile.Lambda.template.replace"
+                  },
+                  "endColumn": 32,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 25,
+                  "startLine": 84
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/userProfile.ts"
+                }
+              }
+            },
+            {
+              "id": 3,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 26,
+                    "domType": "UnknownReference",
+                    "nodeID": 156079,
+                    "fullName": "CxJSNS_2575a474.getUserProfile.Lambda.template"
+                  },
+                  "endColumn": 13,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 5,
+                  "startLine": 84
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/userProfile.ts"
+                }
+              }
+            },
+            {
+              "id": 4,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 26,
+                    "domType": "UnknownReference",
+                    "nodeID": 156089,
+                    "fullName": "CxJSNS_2575a474.getUserProfile.Lambda.template"
+                  },
+                  "endColumn": 36,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 28,
+                  "startLine": 86
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/userProfile.ts"
+                }
+              }
+            },
+            {
+              "id": 5,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 26,
+                    "domType": "MethodInvokeExpr",
+                    "nodeID": 156085,
+                    "fullName": "CxJSNS_2575a474.pug.compile"
+                  },
+                  "endColumn": 27,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 20,
+                  "startLine": 86
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/userProfile.ts"
+                }
+              }
+            },
+            {
+              "id": 6,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 26,
+                    "domType": "UnknownReference",
+                    "nodeID": 156090,
+                    "fullName": "CxJSNS_2575a474.getUserProfile.Lambda.fn"
+                  },
+                  "endColumn": 13,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 11,
+                  "startLine": 86
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/userProfile.ts"
+                }
+              }
+            },
+            {
+              "id": 7,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 26,
+                    "domType": "MethodInvokeExpr",
+                    "nodeID": 156181,
+                    "fullName": "CxJSNS_2575a474.getUserProfile.Lambda.fn"
+                  },
+                  "endColumn": 16,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 14,
+                  "startLine": 97
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/userProfile.ts"
+                }
+              }
+            },
+            {
+              "id": 8,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 26,
+                    "domType": "MethodInvokeExpr",
+                    "nodeID": 156175,
+                    "fullName": "CxJSNS_2575a474.getUserProfile.Lambda.res.send"
+                  },
+                  "endColumn": 13,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 9,
+                  "startLine": 97
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/userProfile.ts"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "state": "TO_VERIFY",
+            "status": "NEW",
+            "severity": "CRITICAL",
+            "queryID": 6561501369275698122,
+            "foundAt": "2025-06-17T12:45:30Z",
+            "firstScanID": "c9114bfc-a403-4297-ad4f-1c30f2fe5b8d",
+            "firstFoundAt": "2025-06-17T12:45:30Z",
+            "cweID": 79,
+            "cvssScore": 9.4203,
+            "confidenceLevel": 0,
+            "compliances": [
+              "Top Tier",
+              "FISMA 2014",
+              "SANS top 25",
+              "MOIS(KISA) Secure Coding 2021",
+              "ASA Premium",
+              "ASD STIG 6.1",
+              "OWASP Mobile Top 10 2024",
+              "OWASP Top 10 2021",
+              "PCI DSS v4.0",
+              "Base Preset",
+              "PCI DSS v3.2.1",
+              "NIST SP 800-53",
+              "CWE top 25",
+              "OWASP Top 10 2017",
+              "OWASP ASVS",
+              "OWASP Top 10 2013"
+            ]
+          },
+          "hostedViewerUri": "https://deu.ast.checkmarx.net/sast-results/34447a4f-def0-4cca-b6f9-ff5aece8604b/bfd04472-1a92-4426-ab7e-e55064a186ac?resultId=2LmrGQ%2FU3kcLqQ%2FPtIl6NGbC2SE%3D",
+          "partialFingerprints": {
+            "similarityID": "1945671979",
+            "queryKey": "JavaScript_Server_Side_Vulnerabilities.Stored_XSS",
+            "nodeFilePathsSha256": "e2ee0f4dcc31fc4138b1aac84aec39917f229f8d66cb240432eefc45d053292c"
+          },
+          "ruleId": "JavaScript_Server_Side_Vulnerabilities.Stored_XSS"
+        },
+        {
+          "message": {
+            "markdown": "The method **Lambda** embeds untrusted data in generated output with **send**, at line **72** of **/routes/videoHandler.ts**. This untrusted data is embedded into the output without proper sanitization or encoding, enabling an attacker to inject malicious code into the generated web-page.\n\nThe attacker would be able to alter the returned web page by saving malicious data in a data-store ahead of time. The attacker's modified data is then read from the database by the **getSubsFromFile** method with **get**, at line **81** of **/routes/videoHandler.ts**. This untrusted data then flows through the code straight to the output web page, without sanitization.\u00a0\r\n\r\nThis can enable a Stored Cross-Site Scripting (XSS) attack.\n\n",
+            "text": "The method Lambda embeds untrusted data in generated output with send, at line 72 of /routes/videoHandler.ts. This untrusted data is embedded into the output without proper sanitization or encoding, enabling an attacker to inject malicious code into the generated web-page.\n\nThe attacker would be able to alter the returned web page by saving malicious data in a data-store ahead of time. The attacker's modified data is then read from the database by the getSubsFromFile method with get, at line 81 of /routes/videoHandler.ts. This untrusted data then flows through the code straight to the output web page, without sanitization.\u00a0\r\n\r\nThis can enable a Stored Cross-Site Scripting (XSS) attack.\n\n"
+          },
+          "locations": [
+            {
+              "id": 0,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "getSubsFromFile",
+                    "methodLine": 80,
+                    "domType": "MethodInvokeExpr",
+                    "nodeID": 161528,
+                    "fullName": "CxJSNS_97b6a483.config.get"
+                  },
+                  "endColumn": 31,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 28,
+                  "startLine": 81
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/videoHandler.ts"
+                }
+              }
+            },
+            {
+              "id": 1,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "getSubsFromFile",
+                    "methodLine": 80,
+                    "domType": "UnknownReference",
+                    "nodeID": 161539,
+                    "fullName": "CxJSNS_97b6a483.getSubsFromFile.subtitles"
+                  },
+                  "endColumn": 18,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 9,
+                  "startLine": 81
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/videoHandler.ts"
+                }
+              }
+            },
+            {
+              "id": 2,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "getSubsFromFile",
+                    "methodLine": 80,
+                    "domType": "UnknownReference",
+                    "nodeID": 161551,
+                    "fullName": "CxJSNS_97b6a483.getSubsFromFile.subtitles"
+                  },
+                  "endColumn": 90,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 81,
+                  "startLine": 82
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/videoHandler.ts"
+                }
+              }
+            },
+            {
+              "id": 3,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "getSubsFromFile",
+                    "methodLine": 80,
+                    "domType": "MethodInvokeExpr",
+                    "nodeID": 161545,
+                    "fullName": "CxJSNS_97b6a483.fs.readFileSync"
+                  },
+                  "endColumn": 31,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 19,
+                  "startLine": 82
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/videoHandler.ts"
+                }
+              }
+            },
+            {
+              "id": 4,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "getSubsFromFile",
+                    "methodLine": 80,
+                    "domType": "UnknownReference",
+                    "nodeID": 161554,
+                    "fullName": "CxJSNS_97b6a483.getSubsFromFile.data"
+                  },
+                  "endColumn": 13,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 9,
+                  "startLine": 82
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/videoHandler.ts"
+                }
+              }
+            },
+            {
+              "id": 5,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "getSubsFromFile",
+                    "methodLine": 80,
+                    "domType": "UnknownReference",
+                    "nodeID": 161556,
+                    "fullName": "CxJSNS_97b6a483.getSubsFromFile.data"
+                  },
+                  "endColumn": 14,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 10,
+                  "startLine": 83
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/videoHandler.ts"
+                }
+              }
+            },
+            {
+              "id": 6,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "getSubsFromFile",
+                    "methodLine": 80,
+                    "domType": "MethodInvokeExpr",
+                    "nodeID": 161559,
+                    "fullName": "CxJSNS_97b6a483.getSubsFromFile.data.toString"
+                  },
+                  "endColumn": 23,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 15,
+                  "startLine": 83
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/videoHandler.ts"
+                }
+              }
+            },
+            {
+              "id": 7,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 53,
+                    "domType": "MethodInvokeExpr",
+                    "nodeID": 162299,
+                    "fullName": "CxJSNS_97b6a483.getSubsFromFile"
+                  },
+                  "endColumn": 35,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 20,
+                  "startLine": 56
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/videoHandler.ts"
+                }
+              }
+            },
+            {
+              "id": 8,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 53,
+                    "domType": "UnknownReference",
+                    "nodeID": 162302,
+                    "fullName": "CxJSNS_97b6a483.Lambda.Lambda.Lambda.subs"
+                  },
+                  "endColumn": 17,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 13,
+                  "startLine": 56
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/videoHandler.ts"
+                }
+              }
+            },
+            {
+              "id": 9,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 53,
+                    "domType": "UnknownReference",
+                    "nodeID": 162570,
+                    "fullName": "CxJSNS_97b6a483.Lambda.Lambda.Lambda.subs"
+                  },
+                  "endColumn": 169,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 165,
+                  "startLine": 71
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/videoHandler.ts"
+                }
+              }
+            },
+            {
+              "id": 10,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 53,
+                    "domType": "MethodInvokeExpr",
+                    "nodeID": 162561,
+                    "fullName": "CxJSNS_97b6a483.Lambda.Lambda.Lambda.compiledTemplate.replace"
+                  },
+                  "endColumn": 50,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 43,
+                  "startLine": 71
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/videoHandler.ts"
+                }
+              }
+            },
+            {
+              "id": 11,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 53,
+                    "domType": "UnknownReference",
+                    "nodeID": 162572,
+                    "fullName": "CxJSNS_97b6a483.Lambda.Lambda.Lambda.compiledTemplate"
+                  },
+                  "endColumn": 23,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 7,
+                  "startLine": 71
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/videoHandler.ts"
+                }
+              }
+            },
+            {
+              "id": 12,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 53,
+                    "domType": "UnknownReference",
+                    "nodeID": 162581,
+                    "fullName": "CxJSNS_97b6a483.Lambda.Lambda.Lambda.compiledTemplate"
+                  },
+                  "endColumn": 32,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 16,
+                  "startLine": 72
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/videoHandler.ts"
+                }
+              }
+            },
+            {
+              "id": 13,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 53,
+                    "domType": "MethodInvokeExpr",
+                    "nodeID": 162577,
+                    "fullName": "CxJSNS_97b6a483.Lambda.Lambda.res.send"
+                  },
+                  "endColumn": 15,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 11,
+                  "startLine": 72
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/videoHandler.ts"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "state": "TO_VERIFY",
+            "status": "NEW",
+            "severity": "CRITICAL",
+            "queryID": 6561501369275698122,
+            "foundAt": "2025-06-17T12:45:30Z",
+            "firstScanID": "c9114bfc-a403-4297-ad4f-1c30f2fe5b8d",
+            "firstFoundAt": "2025-06-17T12:45:30Z",
+            "cweID": 79,
+            "cvssScore": 9.4203,
+            "confidenceLevel": 0,
+            "compliances": [
+              "Top Tier",
+              "FISMA 2014",
+              "SANS top 25",
+              "MOIS(KISA) Secure Coding 2021",
+              "ASA Premium",
+              "ASD STIG 6.1",
+              "OWASP Mobile Top 10 2024",
+              "OWASP Top 10 2021",
+              "PCI DSS v4.0",
+              "Base Preset",
+              "PCI DSS v3.2.1",
+              "NIST SP 800-53",
+              "CWE top 25",
+              "OWASP Top 10 2017",
+              "OWASP ASVS",
+              "OWASP Top 10 2013"
+            ]
+          },
+          "hostedViewerUri": "https://deu.ast.checkmarx.net/sast-results/34447a4f-def0-4cca-b6f9-ff5aece8604b/bfd04472-1a92-4426-ab7e-e55064a186ac?resultId=FZhUKwNjRnp6e8RquQDBkxY6S9c%3D",
+          "partialFingerprints": {
+            "similarityID": "-1719478649",
+            "queryKey": "JavaScript_Server_Side_Vulnerabilities.Stored_XSS",
+            "nodeFilePathsSha256": "5de1e859f996a8a98968246b005237f0eec4c2317f6a47dbb8622b7e7fdcfec5"
+          },
+          "ruleId": "JavaScript_Server_Side_Vulnerabilities.Stored_XSS"
+        },
+        {
+          "message": {
+            "markdown": "The method **Lambda** embeds untrusted data in generated output with **send**, at line **72** of **/routes/videoHandler.ts**. This untrusted data is embedded into the output without proper sanitization or encoding, enabling an attacker to inject malicious code into the generated web-page.\n\nThe attacker would be able to alter the returned web page by saving malicious data in a data-store ahead of time. The attacker's modified data is then read from the database by the **favicon** method with **get**, at line **76** of **/routes/videoHandler.ts**. This untrusted data then flows through the code straight to the output web page, without sanitization.\u00a0\r\n\r\nThis can enable a Stored Cross-Site Scripting (XSS) attack.\n\n",
+            "text": "The method Lambda embeds untrusted data in generated output with send, at line 72 of /routes/videoHandler.ts. This untrusted data is embedded into the output without proper sanitization or encoding, enabling an attacker to inject malicious code into the generated web-page.\n\nThe attacker would be able to alter the returned web page by saving malicious data in a data-store ahead of time. The attacker's modified data is then read from the database by the favicon method with get, at line 76 of /routes/videoHandler.ts. This untrusted data then flows through the code straight to the output web page, without sanitization.\u00a0\r\n\r\nThis can enable a Stored Cross-Site Scripting (XSS) attack.\n\n"
+          },
+          "locations": [
+            {
+              "id": 0,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "favicon",
+                    "methodLine": 75,
+                    "domType": "MethodInvokeExpr",
+                    "nodeID": 162174,
+                    "fullName": "CxJSNS_97b6a483.config.get"
+                  },
+                  "endColumn": 44,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 41,
+                  "startLine": 76
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/videoHandler.ts"
+                }
+              }
+            },
+            {
+              "id": 1,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "favicon",
+                    "methodLine": 75,
+                    "domType": "MethodInvokeExpr",
+                    "nodeID": 162167,
+                    "fullName": "CxJSNS_97b6a483.utils.extractFilename"
+                  },
+                  "endColumn": 33,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 18,
+                  "startLine": 76
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/videoHandler.ts"
+                }
+              }
+            },
+            {
+              "id": 2,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 53,
+                    "domType": "MethodInvokeExpr",
+                    "nodeID": 162429,
+                    "fullName": "CxJSNS_97b6a483.Lambda.favicon"
+                  },
+                  "endColumn": 56,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 49,
+                  "startLine": 63
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/videoHandler.ts"
+                }
+              }
+            },
+            {
+              "id": 3,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 53,
+                    "domType": "MethodInvokeExpr",
+                    "nodeID": 162415,
+                    "fullName": "CxJSNS_97b6a483.Lambda.Lambda.Lambda.template.replace"
+                  },
+                  "endColumn": 34,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 27,
+                  "startLine": 63
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/videoHandler.ts"
+                }
+              }
+            },
+            {
+              "id": 4,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 53,
+                    "domType": "UnknownReference",
+                    "nodeID": 162432,
+                    "fullName": "CxJSNS_97b6a483.Lambda.Lambda.Lambda.template"
+                  },
+                  "endColumn": 15,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 7,
+                  "startLine": 63
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/videoHandler.ts"
+                }
+              }
+            },
+            {
+              "id": 5,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 53,
+                    "domType": "UnknownReference",
+                    "nodeID": 162435,
+                    "fullName": "CxJSNS_97b6a483.Lambda.Lambda.Lambda.template"
+                  },
+                  "endColumn": 26,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 18,
+                  "startLine": 64
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/videoHandler.ts"
+                }
+              }
+            },
+            {
+              "id": 6,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 53,
+                    "domType": "MethodInvokeExpr",
+                    "nodeID": 162438,
+                    "fullName": "CxJSNS_97b6a483.Lambda.Lambda.Lambda.template.replace"
+                  },
+                  "endColumn": 34,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 27,
+                  "startLine": 64
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/videoHandler.ts"
+                }
+              }
+            },
+            {
+              "id": 7,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 53,
+                    "domType": "UnknownReference",
+                    "nodeID": 162452,
+                    "fullName": "CxJSNS_97b6a483.Lambda.Lambda.Lambda.template"
+                  },
+                  "endColumn": 15,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 7,
+                  "startLine": 64
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/videoHandler.ts"
+                }
+              }
+            },
+            {
+              "id": 8,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 53,
+                    "domType": "UnknownReference",
+                    "nodeID": 162455,
+                    "fullName": "CxJSNS_97b6a483.Lambda.Lambda.Lambda.template"
+                  },
+                  "endColumn": 26,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 18,
+                  "startLine": 65
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/videoHandler.ts"
+                }
+              }
+            },
+            {
+              "id": 9,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 53,
+                    "domType": "MethodInvokeExpr",
+                    "nodeID": 162458,
+                    "fullName": "CxJSNS_97b6a483.Lambda.Lambda.Lambda.template.replace"
+                  },
+                  "endColumn": 34,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 27,
+                  "startLine": 65
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/videoHandler.ts"
+                }
+              }
+            },
+            {
+              "id": 10,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 53,
+                    "domType": "UnknownReference",
+                    "nodeID": 162472,
+                    "fullName": "CxJSNS_97b6a483.Lambda.Lambda.Lambda.template"
+                  },
+                  "endColumn": 15,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 7,
+                  "startLine": 65
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/videoHandler.ts"
+                }
+              }
+            },
+            {
+              "id": 11,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 53,
+                    "domType": "UnknownReference",
+                    "nodeID": 162475,
+                    "fullName": "CxJSNS_97b6a483.Lambda.Lambda.Lambda.template"
+                  },
+                  "endColumn": 26,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 18,
+                  "startLine": 66
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/videoHandler.ts"
+                }
+              }
+            },
+            {
+              "id": 12,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 53,
+                    "domType": "MethodInvokeExpr",
+                    "nodeID": 162478,
+                    "fullName": "CxJSNS_97b6a483.Lambda.Lambda.Lambda.template.replace"
+                  },
+                  "endColumn": 34,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 27,
+                  "startLine": 66
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/videoHandler.ts"
+                }
+              }
+            },
+            {
+              "id": 13,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 53,
+                    "domType": "UnknownReference",
+                    "nodeID": 162492,
+                    "fullName": "CxJSNS_97b6a483.Lambda.Lambda.Lambda.template"
+                  },
+                  "endColumn": 15,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 7,
+                  "startLine": 66
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/videoHandler.ts"
+                }
+              }
+            },
+            {
+              "id": 14,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 53,
+                    "domType": "UnknownReference",
+                    "nodeID": 162495,
+                    "fullName": "CxJSNS_97b6a483.Lambda.Lambda.Lambda.template"
+                  },
+                  "endColumn": 26,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 18,
+                  "startLine": 67
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/videoHandler.ts"
+                }
+              }
+            },
+            {
+              "id": 15,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 53,
+                    "domType": "MethodInvokeExpr",
+                    "nodeID": 162498,
+                    "fullName": "CxJSNS_97b6a483.Lambda.Lambda.Lambda.template.replace"
+                  },
+                  "endColumn": 34,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 27,
+                  "startLine": 67
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/videoHandler.ts"
+                }
+              }
+            },
+            {
+              "id": 16,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 53,
+                    "domType": "UnknownReference",
+                    "nodeID": 162512,
+                    "fullName": "CxJSNS_97b6a483.Lambda.Lambda.Lambda.template"
+                  },
+                  "endColumn": 15,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 7,
+                  "startLine": 67
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/videoHandler.ts"
+                }
+              }
+            },
+            {
+              "id": 17,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 53,
+                    "domType": "UnknownReference",
+                    "nodeID": 162515,
+                    "fullName": "CxJSNS_97b6a483.Lambda.Lambda.Lambda.template"
+                  },
+                  "endColumn": 26,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 18,
+                  "startLine": 68
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/videoHandler.ts"
+                }
+              }
+            },
+            {
+              "id": 18,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 53,
+                    "domType": "MethodInvokeExpr",
+                    "nodeID": 162518,
+                    "fullName": "CxJSNS_97b6a483.Lambda.Lambda.Lambda.template.replace"
+                  },
+                  "endColumn": 34,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 27,
+                  "startLine": 68
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/videoHandler.ts"
+                }
+              }
+            },
+            {
+              "id": 19,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 53,
+                    "domType": "UnknownReference",
+                    "nodeID": 162532,
+                    "fullName": "CxJSNS_97b6a483.Lambda.Lambda.Lambda.template"
+                  },
+                  "endColumn": 15,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 7,
+                  "startLine": 68
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/videoHandler.ts"
+                }
+              }
+            },
+            {
+              "id": 20,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 53,
+                    "domType": "UnknownReference",
+                    "nodeID": 162542,
+                    "fullName": "CxJSNS_97b6a483.Lambda.Lambda.Lambda.template"
+                  },
+                  "endColumn": 38,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 30,
+                  "startLine": 69
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/videoHandler.ts"
+                }
+              }
+            },
+            {
+              "id": 21,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 53,
+                    "domType": "MethodInvokeExpr",
+                    "nodeID": 162538,
+                    "fullName": "CxJSNS_97b6a483.pug.compile"
+                  },
+                  "endColumn": 29,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 22,
+                  "startLine": 69
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/videoHandler.ts"
+                }
+              }
+            },
+            {
+              "id": 22,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 53,
+                    "domType": "UnknownReference",
+                    "nodeID": 162543,
+                    "fullName": "CxJSNS_97b6a483.Lambda.Lambda.Lambda.fn"
+                  },
+                  "endColumn": 15,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 13,
+                  "startLine": 69
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/videoHandler.ts"
+                }
+              }
+            },
+            {
+              "id": 23,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 53,
+                    "domType": "MethodInvokeExpr",
+                    "nodeID": 162549,
+                    "fullName": "CxJSNS_97b6a483.Lambda.Lambda.Lambda.fn"
+                  },
+                  "endColumn": 32,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 30,
+                  "startLine": 70
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/videoHandler.ts"
+                }
+              }
+            },
+            {
+              "id": 24,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 53,
+                    "domType": "Declarator",
+                    "nodeID": 162546,
+                    "fullName": "CxJSNS_97b6a483.Lambda.Lambda.Lambda.compiledTemplate"
+                  },
+                  "endColumn": 27,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 11,
+                  "startLine": 70
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/videoHandler.ts"
+                }
+              }
+            },
+            {
+              "id": 25,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 53,
+                    "domType": "UnknownReference",
+                    "nodeID": 162558,
+                    "fullName": "CxJSNS_97b6a483.Lambda.Lambda.Lambda.compiledTemplate"
+                  },
+                  "endColumn": 42,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 26,
+                  "startLine": 71
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/videoHandler.ts"
+                }
+              }
+            },
+            {
+              "id": 26,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 53,
+                    "domType": "MethodInvokeExpr",
+                    "nodeID": 162561,
+                    "fullName": "CxJSNS_97b6a483.Lambda.Lambda.Lambda.compiledTemplate.replace"
+                  },
+                  "endColumn": 50,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 43,
+                  "startLine": 71
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/videoHandler.ts"
+                }
+              }
+            },
+            {
+              "id": 27,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 53,
+                    "domType": "UnknownReference",
+                    "nodeID": 162572,
+                    "fullName": "CxJSNS_97b6a483.Lambda.Lambda.Lambda.compiledTemplate"
+                  },
+                  "endColumn": 23,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 7,
+                  "startLine": 71
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/videoHandler.ts"
+                }
+              }
+            },
+            {
+              "id": 28,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 53,
+                    "domType": "UnknownReference",
+                    "nodeID": 162581,
+                    "fullName": "CxJSNS_97b6a483.Lambda.Lambda.Lambda.compiledTemplate"
+                  },
+                  "endColumn": 32,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 16,
+                  "startLine": 72
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/videoHandler.ts"
+                }
+              }
+            },
+            {
+              "id": 29,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 53,
+                    "domType": "MethodInvokeExpr",
+                    "nodeID": 162577,
+                    "fullName": "CxJSNS_97b6a483.Lambda.Lambda.res.send"
+                  },
+                  "endColumn": 15,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 11,
+                  "startLine": 72
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/videoHandler.ts"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "state": "TO_VERIFY",
+            "status": "NEW",
+            "severity": "CRITICAL",
+            "queryID": 6561501369275698122,
+            "foundAt": "2025-06-17T12:45:30Z",
+            "firstScanID": "c9114bfc-a403-4297-ad4f-1c30f2fe5b8d",
+            "firstFoundAt": "2025-06-17T12:45:30Z",
+            "cweID": 79,
+            "cvssScore": 9.4203,
+            "confidenceLevel": 0,
+            "compliances": [
+              "Top Tier",
+              "FISMA 2014",
+              "SANS top 25",
+              "MOIS(KISA) Secure Coding 2021",
+              "ASA Premium",
+              "ASD STIG 6.1",
+              "OWASP Mobile Top 10 2024",
+              "OWASP Top 10 2021",
+              "PCI DSS v4.0",
+              "Base Preset",
+              "PCI DSS v3.2.1",
+              "NIST SP 800-53",
+              "CWE top 25",
+              "OWASP Top 10 2017",
+              "OWASP ASVS",
+              "OWASP Top 10 2013"
+            ]
+          },
+          "hostedViewerUri": "https://deu.ast.checkmarx.net/sast-results/34447a4f-def0-4cca-b6f9-ff5aece8604b/bfd04472-1a92-4426-ab7e-e55064a186ac?resultId=1szgcmNl%2BuGYWL3zSf57LtEroRs%3D",
+          "partialFingerprints": {
+            "similarityID": "1691342060",
+            "queryKey": "JavaScript_Server_Side_Vulnerabilities.Stored_XSS",
+            "nodeFilePathsSha256": "274b38e3573f2066a5f8ae1c63bb9df20673b702b99536e01c9d2a58eb9c3dea"
+          },
+          "ruleId": "JavaScript_Server_Side_Vulnerabilities.Stored_XSS"
+        },
+        {
+          "message": {
+            "markdown": "The application's **Lambda** method executes an SQL query with **query**, at line **23** of **/routes/search.ts**. The application constructs this SQL query by embedding an untrusted string into the query without proper sanitization. The concatenated string is submitted to the database, where it is parsed and executed accordingly.\n\nAn attacker would be able to inject arbitrary syntax and data into the SQL query, by crafting a malicious payload and providing it via the input **q**; this input is then read by the **Lambda** method at line **21** of **/routes/search.ts**. This input then flows through the code, into a query and to the database server - without sanitization.\r\n\r\nThis may enable an SQL Injection attack.\n\n",
+            "text": "The application's Lambda method executes an SQL query with query, at line 23 of /routes/search.ts. The application constructs this SQL query by embedding an untrusted string into the query without proper sanitization. The concatenated string is submitted to the database, where it is parsed and executed accordingly.\n\nAn attacker would be able to inject arbitrary syntax and data into the SQL query, by crafting a malicious payload and providing it via the input q; this input is then read by the Lambda method at line 21 of /routes/search.ts. This input then flows through the code, into a query and to the database server - without sanitization.\r\n\r\nThis may enable an SQL Injection attack.\n\n"
+          },
+          "locations": [
+            {
+              "id": 0,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 20,
+                    "domType": "MemberAccess",
+                    "nodeID": 152643,
+                    "fullName": "CxJSNS_e45d0182.searchProducts.Lambda.req.query.q"
+                  },
+                  "endColumn": 71,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 70,
+                  "startLine": 21
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/search.ts"
+                }
+              }
+            },
+            {
+              "id": 1,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 20,
+                    "domType": "Declarator",
+                    "nodeID": 152632,
+                    "fullName": "CxJSNS_e45d0182.searchProducts.Lambda.criteria"
+                  },
+                  "endColumn": 17,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 9,
+                  "startLine": 21
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/search.ts"
+                }
+              }
+            },
+            {
+              "id": 2,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 20,
+                    "domType": "UnknownReference",
+                    "nodeID": 152656,
+                    "fullName": "CxJSNS_e45d0182.searchProducts.Lambda.criteria"
+                  },
+                  "endColumn": 51,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 43,
+                  "startLine": 22
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/search.ts"
+                }
+              }
+            },
+            {
+              "id": 3,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 20,
+                    "domType": "UnknownReference",
+                    "nodeID": 152667,
+                    "fullName": "CxJSNS_e45d0182.searchProducts.Lambda.criteria"
+                  },
+                  "endColumn": 13,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 5,
+                  "startLine": 22
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/search.ts"
+                }
+              }
+            },
+            {
+              "id": 4,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 20,
+                    "domType": "UnknownReference",
+                    "nodeID": 152684,
+                    "fullName": "CxJSNS_e45d0182.searchProducts.Lambda.criteria"
+                  },
+                  "endColumn": 118,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 110,
+                  "startLine": 23
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/search.ts"
+                }
+              }
+            },
+            {
+              "id": 5,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 20,
+                    "domType": "MethodInvokeExpr",
+                    "nodeID": 152673,
+                    "fullName": "CxJSNS_e45d0182.models.sequelize.query"
+                  },
+                  "endColumn": 27,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 22,
+                  "startLine": 23
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/search.ts"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "state": "TO_VERIFY",
+            "status": "NEW",
+            "severity": "CRITICAL",
+            "queryID": 17606990743818532616,
+            "foundAt": "2025-06-17T12:45:30Z",
+            "firstScanID": "c9114bfc-a403-4297-ad4f-1c30f2fe5b8d",
+            "firstFoundAt": "2025-06-17T12:45:30Z",
+            "cweID": 89,
+            "cvssScore": 9.7101,
+            "confidenceLevel": 0,
+            "compliances": [
+              "ASD STIG 6.1",
+              "CWE top 25",
+              "OWASP Top 10 2013",
+              "PCI DSS v3.2.1",
+              "OWASP ASVS",
+              "Base Preset",
+              "FISMA 2014",
+              "Top Tier",
+              "SANS top 25",
+              "OWASP Top 10 2021",
+              "OWASP Mobile Top 10 2024",
+              "PCI DSS v4.0",
+              "MOIS(KISA) Secure Coding 2021",
+              "NIST SP 800-53",
+              "ASA Premium"
+            ]
+          },
+          "hostedViewerUri": "https://deu.ast.checkmarx.net/sast-results/34447a4f-def0-4cca-b6f9-ff5aece8604b/bfd04472-1a92-4426-ab7e-e55064a186ac?resultId=gJDvhExYE6ItBz410dMGdF1V6oc%3D",
+          "partialFingerprints": {
+            "similarityID": "-1855993582",
+            "queryKey": "JavaScript_Server_Side_Vulnerabilities.SQL_Injection",
+            "nodeFilePathsSha256": "102902b03a8f114eda15af35ab91f3665e45ec7681803df68697b7ab798c9e0c"
+          },
+          "ruleId": "JavaScript_Server_Side_Vulnerabilities.SQL_Injection"
+        },
+        {
+          "message": {
+            "markdown": "The application's **Lambda** method executes an SQL query with **query**, at line **34** of **/routes/login.ts**. The application constructs this SQL query by embedding an untrusted string into the query without proper sanitization. The concatenated string is submitted to the database, where it is parsed and executed accordingly.\n\nAn attacker would be able to inject arbitrary syntax and data into the SQL query, by crafting a malicious payload and providing it via the input **password**; this input is then read by the **Lambda** method at line **34** of **/routes/login.ts**. This input then flows through the code, into a query and to the database server - without sanitization.\r\n\r\nThis may enable an SQL Injection attack.\n\n",
+            "text": "The application's Lambda method executes an SQL query with query, at line 34 of /routes/login.ts. The application constructs this SQL query by embedding an untrusted string into the query without proper sanitization. The concatenated string is submitted to the database, where it is parsed and executed accordingly.\n\nAn attacker would be able to inject arbitrary syntax and data into the SQL query, by crafting a malicious payload and providing it via the input password; this input is then read by the Lambda method at line 34 of /routes/login.ts. This input then flows through the code, into a query and to the database server - without sanitization.\r\n\r\nThis may enable an SQL Injection attack.\n\n"
+          },
+          "locations": [
+            {
+              "id": 0,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 32,
+                    "domType": "MemberAccess",
+                    "nodeID": 139730,
+                    "fullName": "CxJSNS_3fb411ef.login.Lambda.req.body.password"
+                  },
+                  "endColumn": 138,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 130,
+                  "startLine": 34
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/login.ts"
+                }
+              }
+            },
+            {
+              "id": 1,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 32,
+                    "domType": "MethodInvokeExpr",
+                    "nodeID": 139723,
+                    "fullName": "CxJSNS_3fb411ef.security.hash"
+                  },
+                  "endColumn": 120,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 116,
+                  "startLine": 34
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/login.ts"
+                }
+              }
+            },
+            {
+              "id": 2,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 32,
+                    "domType": "MethodInvokeExpr",
+                    "nodeID": 139705,
+                    "fullName": "CxJSNS_3fb411ef.models.sequelize.query"
+                  },
+                  "endColumn": 27,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 22,
+                  "startLine": 34
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/login.ts"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "state": "TO_VERIFY",
+            "status": "NEW",
+            "severity": "CRITICAL",
+            "queryID": 17606990743818532616,
+            "foundAt": "2025-06-17T12:45:30Z",
+            "firstScanID": "c9114bfc-a403-4297-ad4f-1c30f2fe5b8d",
+            "firstFoundAt": "2025-06-17T12:45:30Z",
+            "cweID": 89,
+            "cvssScore": 9.7101,
+            "confidenceLevel": 0,
+            "compliances": [
+              "ASD STIG 6.1",
+              "CWE top 25",
+              "OWASP Top 10 2013",
+              "PCI DSS v3.2.1",
+              "OWASP ASVS",
+              "Base Preset",
+              "FISMA 2014",
+              "Top Tier",
+              "SANS top 25",
+              "OWASP Top 10 2021",
+              "OWASP Mobile Top 10 2024",
+              "PCI DSS v4.0",
+              "MOIS(KISA) Secure Coding 2021",
+              "NIST SP 800-53",
+              "ASA Premium"
+            ]
+          },
+          "hostedViewerUri": "https://deu.ast.checkmarx.net/sast-results/34447a4f-def0-4cca-b6f9-ff5aece8604b/bfd04472-1a92-4426-ab7e-e55064a186ac?resultId=xK0hXunGs3VRtRB8T6mAiBDTmtQ%3D",
+          "partialFingerprints": {
+            "similarityID": "-1561053188",
+            "queryKey": "JavaScript_Server_Side_Vulnerabilities.SQL_Injection",
+            "nodeFilePathsSha256": "e56dd74e68cda7b704500a3c0231c7e75b658c290ad2458c0285bdbce1a059ba"
+          },
+          "ruleId": "JavaScript_Server_Side_Vulnerabilities.SQL_Injection"
+        },
+        {
+          "message": {
+            "markdown": "The application's **Lambda** method executes an SQL query with **query**, at line **34** of **/routes/login.ts**. The application constructs this SQL query by embedding an untrusted string into the query without proper sanitization. The concatenated string is submitted to the database, where it is parsed and executed accordingly.\n\nAn attacker would be able to inject arbitrary syntax and data into the SQL query, by crafting a malicious payload and providing it via the input **email**; this input is then read by the **Lambda** method at line **34** of **/routes/login.ts**. This input then flows through the code, into a query and to the database server - without sanitization.\r\n\r\nThis may enable an SQL Injection attack.\n\n",
+            "text": "The application's Lambda method executes an SQL query with query, at line 34 of /routes/login.ts. The application constructs this SQL query by embedding an untrusted string into the query without proper sanitization. The concatenated string is submitted to the database, where it is parsed and executed accordingly.\n\nAn attacker would be able to inject arbitrary syntax and data into the SQL query, by crafting a malicious payload and providing it via the input email; this input is then read by the Lambda method at line 34 of /routes/login.ts. This input then flows through the code, into a query and to the database server - without sanitization.\r\n\r\nThis may enable an SQL Injection attack.\n\n"
+          },
+          "locations": [
+            {
+              "id": 0,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 32,
+                    "domType": "MemberAccess",
+                    "nodeID": 139717,
+                    "fullName": "CxJSNS_3fb411ef.login.Lambda.req.body.email"
+                  },
+                  "endColumn": 80,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 75,
+                  "startLine": 34
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/login.ts"
+                }
+              }
+            },
+            {
+              "id": 1,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 32,
+                    "domType": "MethodInvokeExpr",
+                    "nodeID": 139705,
+                    "fullName": "CxJSNS_3fb411ef.models.sequelize.query"
+                  },
+                  "endColumn": 27,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 22,
+                  "startLine": 34
+                },
+                "artifactLocation": {
+                  "uri": "file:/routes/login.ts"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "state": "TO_VERIFY",
+            "status": "NEW",
+            "severity": "CRITICAL",
+            "queryID": 17606990743818532616,
+            "foundAt": "2025-06-17T12:45:30Z",
+            "firstScanID": "c9114bfc-a403-4297-ad4f-1c30f2fe5b8d",
+            "firstFoundAt": "2025-06-17T12:45:30Z",
+            "cweID": 89,
+            "cvssScore": 9.7101,
+            "confidenceLevel": 0,
+            "compliances": [
+              "ASD STIG 6.1",
+              "CWE top 25",
+              "OWASP Top 10 2013",
+              "PCI DSS v3.2.1",
+              "OWASP ASVS",
+              "Base Preset",
+              "FISMA 2014",
+              "Top Tier",
+              "SANS top 25",
+              "OWASP Top 10 2021",
+              "OWASP Mobile Top 10 2024",
+              "PCI DSS v4.0",
+              "MOIS(KISA) Secure Coding 2021",
+              "NIST SP 800-53",
+              "ASA Premium"
+            ]
+          },
+          "hostedViewerUri": "https://deu.ast.checkmarx.net/sast-results/34447a4f-def0-4cca-b6f9-ff5aece8604b/bfd04472-1a92-4426-ab7e-e55064a186ac?resultId=7At6F5gmQLwZbCnU9fW4Fd87UTg%3D",
+          "partialFingerprints": {
+            "similarityID": "1565127798",
+            "queryKey": "JavaScript_Server_Side_Vulnerabilities.SQL_Injection",
+            "nodeFilePathsSha256": "81d105a496368384bec9b1ba9d2bb4e47b21aba2609c2fefeda91ebe2d402473"
+          },
+          "ruleId": "JavaScript_Server_Side_Vulnerabilities.SQL_Injection"
+        },
+        {
+          "message": {
+            "markdown": "The web-application does not define an HSTS header, leaving it vulnerable to attack.\n\n",
+            "text": "The web-application does not define an HSTS header, leaving it vulnerable to attack.\n\n"
+          },
+          "locations": [
+            {
+              "id": 0,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 24,
+                    "domType": "MethodInvokeExpr",
+                    "nodeID": 108229,
+                    "fullName": "CxJSNS_3fbb85e8.waitForInputToHaveValue.Lambda.res.json"
+                  },
+                  "endColumn": 36,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 32,
+                  "startLine": 32
+                },
+                "artifactLocation": {
+                  "uri": "file:/frontend/src/hacking-instructor/helpers/helpers.ts"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "state": "TO_VERIFY",
+            "status": "NEW",
+            "severity": "MEDIUM",
+            "queryID": 7630264517191277634,
+            "foundAt": "2025-06-17T12:45:30Z",
+            "firstScanID": "c9114bfc-a403-4297-ad4f-1c30f2fe5b8d",
+            "firstFoundAt": "2025-06-17T12:45:30Z",
+            "cweID": 346,
+            "cvssScore": 4.9275,
+            "confidenceLevel": 0,
+            "compliances": [
+              "PCI DSS v4.0",
+              "ASA Premium",
+              "Base Preset",
+              "OWASP ASVS",
+              "OWASP Top 10 2021"
+            ]
+          },
+          "hostedViewerUri": "https://deu.ast.checkmarx.net/sast-results/34447a4f-def0-4cca-b6f9-ff5aece8604b/bfd04472-1a92-4426-ab7e-e55064a186ac?resultId=541yF%2Fg1Fp9mMlgB3AMv%2BIRQngg%3D",
+          "partialFingerprints": {
+            "similarityID": "-889201183",
+            "queryKey": "JavaScript_Medium_Threat.Missing_HSTS_Header",
+            "nodeFilePathsSha256": "fe827ffa54c6ced75040e465b96d13ad61b2f55a61a56c25e74c37ae9dea60b7"
+          },
+          "ruleId": "JavaScript_Medium_Threat.Missing_HSTS_Header"
+        },
+        {
+          "message": {
+            "markdown": "Usage of an unsafe class **bypassSecurityTrustHtml**, which overrides output sanitization, was found at\u00a0**/frontend/src/app/data-export/data-export.component.ts** in line\u00a0**55**.",
+            "text": "Usage of an unsafe class bypassSecurityTrustHtml, which overrides output sanitization, was found at\u00a0/frontend/src/app/data-export/data-export.component.ts in line\u00a055."
+          },
+          "locations": [
+            {
+              "id": 0,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 54,
+                    "domType": "MethodInvokeExpr",
+                    "nodeID": 37031,
+                    "fullName": "CxJSNS_544ff523.DataExportComponent.sanitizer.bypassSecurityTrustHtml"
+                  },
+                  "endColumn": 60,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 37,
+                  "startLine": 55
+                },
+                "artifactLocation": {
+                  "uri": "file:/frontend/src/app/data-export/data-export.component.ts"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "state": "TO_VERIFY",
+            "status": "NEW",
+            "severity": "LOW",
+            "queryID": 2211341642471709656,
+            "foundAt": "2025-06-17T12:45:30Z",
+            "firstScanID": "c9114bfc-a403-4297-ad4f-1c30f2fe5b8d",
+            "firstFoundAt": "2025-06-17T12:45:30Z",
+            "cweID": 116,
+            "cvssScore": 2.3188,
+            "confidenceLevel": 0,
+            "compliances": [
+              "OWASP ASVS",
+              "OWASP Top 10 2021",
+              "SANS top 25",
+              "ASA Premium",
+              "Base Preset",
+              "CWE top 25",
+              "MOIS(KISA) Secure Coding 2021"
+            ]
+          },
+          "hostedViewerUri": "https://deu.ast.checkmarx.net/sast-results/34447a4f-def0-4cca-b6f9-ff5aece8604b/bfd04472-1a92-4426-ab7e-e55064a186ac?resultId=iUjEMnPhdSGUQJjfA4%2B%2FO5nLXdc%3D",
+          "partialFingerprints": {
+            "similarityID": "-1217387967",
+            "queryKey": "JavaScript_Angular.Angular_Usage_of_Unsafe_DOM_Sanitizer",
+            "nodeFilePathsSha256": "17dfafb7703cf9eccb3dcc84bd44140e6d17620355bc00fcb4e7f878b176d1b5"
+          },
+          "ruleId": "JavaScript_Angular.Angular_Usage_of_Unsafe_DOM_Sanitizer"
+        },
+        {
+          "message": {
+            "markdown": "Usage of an unsafe class **bypassSecurityTrustHtml**, which overrides output sanitization, was found at\u00a0**/frontend/src/app/administration/administration.component.ts** in line\u00a0**72**.",
+            "text": "Usage of an unsafe class bypassSecurityTrustHtml, which overrides output sanitization, was found at\u00a0/frontend/src/app/administration/administration.component.ts in line\u00a072."
+          },
+          "locations": [
+            {
+              "id": 0,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 69,
+                    "domType": "MethodInvokeExpr",
+                    "nodeID": 23049,
+                    "fullName": "CxJSNS_f1158dd0.AdministrationComponent.sanitizer.bypassSecurityTrustHtml"
+                  },
+                  "endColumn": 66,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 43,
+                  "startLine": 72
+                },
+                "artifactLocation": {
+                  "uri": "file:/frontend/src/app/administration/administration.component.ts"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "state": "TO_VERIFY",
+            "status": "NEW",
+            "severity": "LOW",
+            "queryID": 2211341642471709656,
+            "foundAt": "2025-06-17T12:45:30Z",
+            "firstScanID": "c9114bfc-a403-4297-ad4f-1c30f2fe5b8d",
+            "firstFoundAt": "2025-06-17T12:45:30Z",
+            "cweID": 116,
+            "cvssScore": 2.3188,
+            "confidenceLevel": 0,
+            "compliances": [
+              "OWASP ASVS",
+              "OWASP Top 10 2021",
+              "SANS top 25",
+              "ASA Premium",
+              "Base Preset",
+              "CWE top 25",
+              "MOIS(KISA) Secure Coding 2021"
+            ]
+          },
+          "hostedViewerUri": "https://deu.ast.checkmarx.net/sast-results/34447a4f-def0-4cca-b6f9-ff5aece8604b/bfd04472-1a92-4426-ab7e-e55064a186ac?resultId=uWOYpQsjvyeR7BwZlL%2FeDhOevFg%3D",
+          "partialFingerprints": {
+            "similarityID": "333569729",
+            "queryKey": "JavaScript_Angular.Angular_Usage_of_Unsafe_DOM_Sanitizer",
+            "nodeFilePathsSha256": "ee825746684533b43059cd35c8dac63c7aaebb26ddff049cfb5a67fff5c72df6"
+          },
+          "ruleId": "JavaScript_Angular.Angular_Usage_of_Unsafe_DOM_Sanitizer"
+        },
+        {
+          "message": {
+            "markdown": "Usage of an unsafe class **bypassSecurityTrustHtml**, which overrides output sanitization, was found at\u00a0**/frontend/src/app/administration/administration.component.ts** in line\u00a0**57**.",
+            "text": "Usage of an unsafe class bypassSecurityTrustHtml, which overrides output sanitization, was found at\u00a0/frontend/src/app/administration/administration.component.ts in line\u00a057."
+          },
+          "locations": [
+            {
+              "id": 0,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 53,
+                    "domType": "MethodInvokeExpr",
+                    "nodeID": 22882,
+                    "fullName": "CxJSNS_f1158dd0.AdministrationComponent.sanitizer.bypassSecurityTrustHtml"
+                  },
+                  "endColumn": 60,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 37,
+                  "startLine": 57
+                },
+                "artifactLocation": {
+                  "uri": "file:/frontend/src/app/administration/administration.component.ts"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "state": "TO_VERIFY",
+            "status": "NEW",
+            "severity": "LOW",
+            "queryID": 2211341642471709656,
+            "foundAt": "2025-06-17T12:45:30Z",
+            "firstScanID": "c9114bfc-a403-4297-ad4f-1c30f2fe5b8d",
+            "firstFoundAt": "2025-06-17T12:45:30Z",
+            "cweID": 116,
+            "cvssScore": 2.3188,
+            "confidenceLevel": 0,
+            "compliances": [
+              "OWASP ASVS",
+              "OWASP Top 10 2021",
+              "SANS top 25",
+              "ASA Premium",
+              "Base Preset",
+              "CWE top 25",
+              "MOIS(KISA) Secure Coding 2021"
+            ]
+          },
+          "hostedViewerUri": "https://deu.ast.checkmarx.net/sast-results/34447a4f-def0-4cca-b6f9-ff5aece8604b/bfd04472-1a92-4426-ab7e-e55064a186ac?resultId=T4pDMhKP4p0RzUMpzdIWcyTn6Go%3D",
+          "partialFingerprints": {
+            "similarityID": "-1567587583",
+            "queryKey": "JavaScript_Angular.Angular_Usage_of_Unsafe_DOM_Sanitizer",
+            "nodeFilePathsSha256": "ee825746684533b43059cd35c8dac63c7aaebb26ddff049cfb5a67fff5c72df6"
+          },
+          "ruleId": "JavaScript_Angular.Angular_Usage_of_Unsafe_DOM_Sanitizer"
+        },
+        {
+          "message": {
+            "markdown": "Usage of an unsafe class **bypassSecurityTrustHtml**, which overrides output sanitization, was found at\u00a0**/frontend/src/app/about/about.component.ts** in line\u00a0**122**.",
+            "text": "Usage of an unsafe class bypassSecurityTrustHtml, which overrides output sanitization, was found at\u00a0/frontend/src/app/about/about.component.ts in line\u00a0122."
+          },
+          "locations": [
+            {
+              "id": 0,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 116,
+                    "domType": "MethodInvokeExpr",
+                    "nodeID": 17937,
+                    "fullName": "CxJSNS_1f44253c.AboutComponent.sanitizer.bypassSecurityTrustHtml"
+                  },
+                  "endColumn": 72,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 49,
+                  "startLine": 122
+                },
+                "artifactLocation": {
+                  "uri": "file:/frontend/src/app/about/about.component.ts"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "state": "TO_VERIFY",
+            "status": "NEW",
+            "severity": "LOW",
+            "queryID": 2211341642471709656,
+            "foundAt": "2025-06-17T12:45:30Z",
+            "firstScanID": "c9114bfc-a403-4297-ad4f-1c30f2fe5b8d",
+            "firstFoundAt": "2025-06-17T12:45:30Z",
+            "cweID": 116,
+            "cvssScore": 2.3188,
+            "confidenceLevel": 0,
+            "compliances": [
+              "OWASP ASVS",
+              "OWASP Top 10 2021",
+              "SANS top 25",
+              "ASA Premium",
+              "Base Preset",
+              "CWE top 25",
+              "MOIS(KISA) Secure Coding 2021"
+            ]
+          },
+          "hostedViewerUri": "https://deu.ast.checkmarx.net/sast-results/34447a4f-def0-4cca-b6f9-ff5aece8604b/bfd04472-1a92-4426-ab7e-e55064a186ac?resultId=5bKOFEWp9JFJgs%2BUfB6k%2BHIr8%2BY%3D",
+          "partialFingerprints": {
+            "similarityID": "-108043611",
+            "queryKey": "JavaScript_Angular.Angular_Usage_of_Unsafe_DOM_Sanitizer",
+            "nodeFilePathsSha256": "a9fc987784c94277ac5932e91af2330fb2b9edfde8ef1cae0f78183b6b73f1be"
+          },
+          "ruleId": "JavaScript_Angular.Angular_Usage_of_Unsafe_DOM_Sanitizer"
+        },
+        {
+          "message": {
+            "markdown": "Usage of an unsafe class **bypassSecurityTrustHtml**, which overrides output sanitization, was found at\u00a0**/frontend/src/app/last-login-ip/last-login-ip.component.ts** in line\u00a0**38**.",
+            "text": "Usage of an unsafe class bypassSecurityTrustHtml, which overrides output sanitization, was found at\u00a0/frontend/src/app/last-login-ip/last-login-ip.component.ts in line\u00a038."
+          },
+          "locations": [
+            {
+              "id": 0,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "parseAuthToken",
+                    "methodLine": 31,
+                    "domType": "MethodInvokeExpr",
+                    "nodeID": 43750,
+                    "fullName": "CxJSNS_4e07359e.LastLoginIpComponent.sanitizer.bypassSecurityTrustHtml"
+                  },
+                  "endColumn": 66,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 43,
+                  "startLine": 38
+                },
+                "artifactLocation": {
+                  "uri": "file:/frontend/src/app/last-login-ip/last-login-ip.component.ts"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "state": "TO_VERIFY",
+            "status": "NEW",
+            "severity": "LOW",
+            "queryID": 2211341642471709656,
+            "foundAt": "2025-06-17T12:45:30Z",
+            "firstScanID": "c9114bfc-a403-4297-ad4f-1c30f2fe5b8d",
+            "firstFoundAt": "2025-06-17T12:45:30Z",
+            "cweID": 116,
+            "cvssScore": 2.3188,
+            "confidenceLevel": 0,
+            "compliances": [
+              "OWASP ASVS",
+              "OWASP Top 10 2021",
+              "SANS top 25",
+              "ASA Premium",
+              "Base Preset",
+              "CWE top 25",
+              "MOIS(KISA) Secure Coding 2021"
+            ]
+          },
+          "hostedViewerUri": "https://deu.ast.checkmarx.net/sast-results/34447a4f-def0-4cca-b6f9-ff5aece8604b/bfd04472-1a92-4426-ab7e-e55064a186ac?resultId=1Lm4%2FFd3fWsDWTO9KnbXQlObtsk%3D",
+          "partialFingerprints": {
+            "similarityID": "-1147094847",
+            "queryKey": "JavaScript_Angular.Angular_Usage_of_Unsafe_DOM_Sanitizer",
+            "nodeFilePathsSha256": "da6f0846aea52bb877449099d813d5d7efb940af0735c39e507c16e46deb8bd2"
+          },
+          "ruleId": "JavaScript_Angular.Angular_Usage_of_Unsafe_DOM_Sanitizer"
+        },
+        {
+          "message": {
+            "markdown": "Usage of an unsafe class **bypassSecurityTrustHtml**, which overrides output sanitization, was found at\u00a0**/frontend/src/app/track-result/track-result.component.ts** in line\u00a0**47**.",
+            "text": "Usage of an unsafe class bypassSecurityTrustHtml, which overrides output sanitization, was found at\u00a0/frontend/src/app/track-result/track-result.component.ts in line\u00a047."
+          },
+          "locations": [
+            {
+              "id": 0,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 45,
+                    "domType": "MethodInvokeExpr",
+                    "nodeID": 94884,
+                    "fullName": "CxJSNS_48608f72.TrackResultComponent.sanitizer.bypassSecurityTrustHtml"
+                  },
+                  "endColumn": 68,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 45,
+                  "startLine": 47
+                },
+                "artifactLocation": {
+                  "uri": "file:/frontend/src/app/track-result/track-result.component.ts"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "state": "TO_VERIFY",
+            "status": "NEW",
+            "severity": "LOW",
+            "queryID": 2211341642471709656,
+            "foundAt": "2025-06-17T12:45:30Z",
+            "firstScanID": "c9114bfc-a403-4297-ad4f-1c30f2fe5b8d",
+            "firstFoundAt": "2025-06-17T12:45:30Z",
+            "cweID": 116,
+            "cvssScore": 2.3188,
+            "confidenceLevel": 0,
+            "compliances": [
+              "OWASP ASVS",
+              "OWASP Top 10 2021",
+              "SANS top 25",
+              "ASA Premium",
+              "Base Preset",
+              "CWE top 25",
+              "MOIS(KISA) Secure Coding 2021"
+            ]
+          },
+          "hostedViewerUri": "https://deu.ast.checkmarx.net/sast-results/34447a4f-def0-4cca-b6f9-ff5aece8604b/bfd04472-1a92-4426-ab7e-e55064a186ac?resultId=25%2F7dapuWYW0ImnTnItJewl1G6w%3D",
+          "partialFingerprints": {
+            "similarityID": "-861317951",
+            "queryKey": "JavaScript_Angular.Angular_Usage_of_Unsafe_DOM_Sanitizer",
+            "nodeFilePathsSha256": "eb6e9af8f518b1543dcead5fc47a60d60854acdedc768df5191a0eb542876bad"
+          },
+          "ruleId": "JavaScript_Angular.Angular_Usage_of_Unsafe_DOM_Sanitizer"
+        },
+        {
+          "message": {
+            "markdown": "Usage of an unsafe class **bypassSecurityTrustHtml**, which overrides output sanitization, was found at\u00a0**/frontend/src/app/search-result/search-result.component.ts** in line\u00a0**159**.",
+            "text": "Usage of an unsafe class bypassSecurityTrustHtml, which overrides output sanitization, was found at\u00a0/frontend/src/app/search-result/search-result.component.ts in line\u00a0159."
+          },
+          "locations": [
+            {
+              "id": 0,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "filterTable",
+                    "methodLine": 151,
+                    "domType": "MethodInvokeExpr",
+                    "nodeID": 76943,
+                    "fullName": "CxJSNS_5f98468a.SearchResultComponent.sanitizer.bypassSecurityTrustHtml"
+                  },
+                  "endColumn": 64,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 41,
+                  "startLine": 159
+                },
+                "artifactLocation": {
+                  "uri": "file:/frontend/src/app/search-result/search-result.component.ts"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "state": "TO_VERIFY",
+            "status": "NEW",
+            "severity": "LOW",
+            "queryID": 2211341642471709656,
+            "foundAt": "2025-06-17T12:45:30Z",
+            "firstScanID": "c9114bfc-a403-4297-ad4f-1c30f2fe5b8d",
+            "firstFoundAt": "2025-06-17T12:45:30Z",
+            "cweID": 116,
+            "cvssScore": 2.3188,
+            "confidenceLevel": 0,
+            "compliances": [
+              "OWASP ASVS",
+              "OWASP Top 10 2021",
+              "SANS top 25",
+              "ASA Premium",
+              "Base Preset",
+              "CWE top 25",
+              "MOIS(KISA) Secure Coding 2021"
+            ]
+          },
+          "hostedViewerUri": "https://deu.ast.checkmarx.net/sast-results/34447a4f-def0-4cca-b6f9-ff5aece8604b/bfd04472-1a92-4426-ab7e-e55064a186ac?resultId=nL60YvNy9jgsap%2FIBeWnOqo4114%3D",
+          "partialFingerprints": {
+            "similarityID": "127615231",
+            "queryKey": "JavaScript_Angular.Angular_Usage_of_Unsafe_DOM_Sanitizer",
+            "nodeFilePathsSha256": "ca6cdd87d2f12a3b5faa2b9ae4a3bbfc647d983cd907e14680ccd33e16f63bc7"
+          },
+          "ruleId": "JavaScript_Angular.Angular_Usage_of_Unsafe_DOM_Sanitizer"
+        },
+        {
+          "message": {
+            "markdown": "Usage of an unsafe class **bypassSecurityTrustHtml**, which overrides output sanitization, was found at\u00a0**/frontend/src/app/search-result/search-result.component.ts** in line\u00a0**133**.",
+            "text": "Usage of an unsafe class bypassSecurityTrustHtml, which overrides output sanitization, was found at\u00a0/frontend/src/app/search-result/search-result.component.ts in line\u00a0133."
+          },
+          "locations": [
+            {
+              "id": 0,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "trustProductDescription",
+                    "methodLine": 131,
+                    "domType": "MethodInvokeExpr",
+                    "nodeID": 76760,
+                    "fullName": "CxJSNS_5f98468a.SearchResultComponent.sanitizer.bypassSecurityTrustHtml"
+                  },
+                  "endColumn": 72,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 49,
+                  "startLine": 133
+                },
+                "artifactLocation": {
+                  "uri": "file:/frontend/src/app/search-result/search-result.component.ts"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "state": "TO_VERIFY",
+            "status": "NEW",
+            "severity": "LOW",
+            "queryID": 2211341642471709656,
+            "foundAt": "2025-06-17T12:45:30Z",
+            "firstScanID": "c9114bfc-a403-4297-ad4f-1c30f2fe5b8d",
+            "firstFoundAt": "2025-06-17T12:45:30Z",
+            "cweID": 116,
+            "cvssScore": 2.3188,
+            "confidenceLevel": 0,
+            "compliances": [
+              "OWASP ASVS",
+              "OWASP Top 10 2021",
+              "SANS top 25",
+              "ASA Premium",
+              "Base Preset",
+              "CWE top 25",
+              "MOIS(KISA) Secure Coding 2021"
+            ]
+          },
+          "hostedViewerUri": "https://deu.ast.checkmarx.net/sast-results/34447a4f-def0-4cca-b6f9-ff5aece8604b/bfd04472-1a92-4426-ab7e-e55064a186ac?resultId=aTnuGVOtmAoMFEeg%2FdspDjOaZtQ%3D",
+          "partialFingerprints": {
+            "similarityID": "-915349801",
+            "queryKey": "JavaScript_Angular.Angular_Usage_of_Unsafe_DOM_Sanitizer",
+            "nodeFilePathsSha256": "ca6cdd87d2f12a3b5faa2b9ae4a3bbfc647d983cd907e14680ccd33e16f63bc7"
+          },
+          "ruleId": "JavaScript_Angular.Angular_Usage_of_Unsafe_DOM_Sanitizer"
+        },
+        {
+          "message": {
+            "markdown": "Usage of an unsafe class **bypassSecurityTrustHtml**, which overrides output sanitization, was found at\u00a0**/frontend/src/app/score-board/score-board.component.ts** in line\u00a0**79**.",
+            "text": "Usage of an unsafe class bypassSecurityTrustHtml, which overrides output sanitization, was found at\u00a0/frontend/src/app/score-board/score-board.component.ts in line\u00a079."
+          },
+          "locations": [
+            {
+              "id": 0,
+              "physicalLocation": {
+                "region": {
+                  "properties": {
+                    "methodName": "Lambda",
+                    "methodLine": 74,
+                    "domType": "MethodInvokeExpr",
+                    "nodeID": 74477,
+                    "fullName": "CxJSNS_2969b2a9.ScoreBoardComponent.sanitizer.bypassSecurityTrustHtml"
+                  },
+                  "endColumn": 62,
+                  "sourceLanguage": "javascript",
+                  "startColumn": 39,
+                  "startLine": 79
+                },
+                "artifactLocation": {
+                  "uri": "file:/frontend/src/app/score-board/score-board.component.ts"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "state": "TO_VERIFY",
+            "status": "NEW",
+            "severity": "LOW",
+            "queryID": 2211341642471709656,
+            "foundAt": "2025-06-17T12:45:30Z",
+            "firstScanID": "bfd04472-1a92-4426-ab7e-e55064a186ac",
+            "firstFoundAt": "2025-06-17T12:45:30Z",
+            "cweID": 116,
+            "cvssScore": 2.3188,
+            "confidenceLevel": 0,
+            "compliances": [
+              "MOIS(KISA) Secure Coding 2021",
+              "OWASP ASVS",
+              "OWASP Top 10 2021",
+              "SANS top 25",
+              "ASA Premium",
+              "Base Preset",
+              "CWE top 25"
+            ]
+          },
+          "hostedViewerUri": "https://deu.ast.checkmarx.net/sast-results/34447a4f-def0-4cca-b6f9-ff5aece8604b/bfd04472-1a92-4426-ab7e-e55064a186ac?resultId=sDWlPuQVaFFB5fLFWVNFfG4UdiQ%3D",
+          "partialFingerprints": {
+            "similarityID": "2029512815",
+            "queryKey": "JavaScript_Angular.Angular_Usage_of_Unsafe_DOM_Sanitizer",
+            "nodeFilePathsSha256": "72a899310b3ca044f730df029d622c039759cf03eaba7aa4edc1fc4fbaad9638"
+          },
+          "ruleId": "JavaScript_Angular.Angular_Usage_of_Unsafe_DOM_Sanitizer"
+        }
+      ],
+      "automationDetails": {
+        "description": {
+          "text": "Static analysis scan with CheckmarxOne SAST"
+        },
+        "guid": "bfd04472-1a92-4426-ab7e-e55064a186ac",
+        "id": "projectid/34447a4f-def0-4cca-b6f9-ff5aece8604b/scanid/bfd04472-1a92-4426-ab7e-e55064a186ac",
+        "correlationGuid": "34447a4f-def0-4cca-b6f9-ff5aece8604b"
+      },
+      "columnKind": "unicodeCodePoints",
+      "versionControlProvenance": [
+        {
+          "branch": "master",
+          "properties": {
+            "sourceType": "github",
+            "sourceOrigin": "webapp"
+          },
+          "repositoryUri": "https://github.com/juice-shop/juice-shop.git",
+          "asOfTimeUtc": "2025-06-17T12:43:38.984203Z"
+        }
+      ]
+    }
+  ],
+  "version": "2.1.0",
+  "properties": {
+    "platform": "CheckmarxOne",
+    "reportCompiler": "cxone_sarif/1.0.1",
+    "scanId": "bfd04472-1a92-4426-ab7e-e55064a186ac",
+    "scanDetails": {
+      "id": "bfd04472-1a92-4426-ab7e-e55064a186ac",
+      "status": "Completed",
+      "statusDetails": [
+        {
+          "name": "general",
+          "status": "Completed",
+          "details": "",
+          "startDate": "2025-06-17T12:43:38.984203Z",
+          "endDate": "2025-06-17T12:48:03.409488Z"
+        },
+        {
+          "name": "apisec",
+          "status": "Completed",
+          "details": "",
+          "startDate": "2025-06-17T12:45:35.246967Z",
+          "endDate": "2025-06-17T12:45:35.947961Z"
+        },
+        {
+          "name": "sast",
+          "status": "Completed",
+          "details": "",
+          "loc": 118597,
+          "startDate": "2025-06-17T12:43:53.510085Z",
+          "endDate": "2025-06-17T12:45:35.249097Z"
+        },
+        {
+          "name": "sca",
+          "status": "Completed",
+          "details": "",
+          "startDate": "2025-06-17T12:43:53.511429Z",
+          "endDate": "2025-06-17T12:48:03.179072Z"
+        },
+        {
+          "name": "containers",
+          "status": "Completed",
+          "details": "",
+          "startDate": "2025-06-17T12:43:53.501745Z",
+          "endDate": "2025-06-17T12:44:36.604054Z"
+        },
+        {
+          "name": "kics",
+          "status": "Completed",
+          "details": "",
+          "startDate": "2025-06-17T12:43:53.511411Z",
+          "endDate": "2025-06-17T12:44:20.649168Z"
+        }
+      ],
+      "branch": "master",
+      "createdAt": "2025-06-17T12:43:38.984203Z",
+      "updatedAt": "2025-06-17T12:48:03.409488Z",
+      "projectId": "34447a4f-def0-4cca-b6f9-ff5aece8604b",
+      "projectName": "Juice-Shop-Automated-Scan",
+      "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36",
+      "initiator": "andrew.gehring@checkmarx.com",
+      "tags": {},
+      "metadata": {
+        "id": "bfd04472-1a92-4426-ab7e-e55064a186ac",
+        "type": "git",
+        "Handler": {
+          "GitHandler": {
+            "branch": "master",
+            "repo_url": "https://github.com/juice-shop/juice-shop.git",
+            "credentials": {
+              "value": "*****",
+              "username": "*****"
+            },
+            "skipSubModules": false
+          }
+        },
+        "configs": [
+          {
+            "type": "sast",
+            "value": {
+              "incremental": "false"
+            }
+          },
+          {
+            "type": "sca",
+            "value": {
+              "enableContainersScan": "false"
+            }
+          },
+          {
+            "type": "containers"
+          },
+          {
+            "type": "kics"
+          },
+          {
+            "type": "apisec"
+          }
+        ],
+        "project": {
+          "id": "34447a4f-def0-4cca-b6f9-ff5aece8604b"
+        },
+        "created_at": {
+          "nanos": 891712199,
+          "seconds": 1750164218
+        }
+      },
+      "engines": [
+        "sast",
+        "sca",
+        "containers",
+        "kics",
+        "apisec"
+      ],
+      "sourceType": "github",
+      "sourceOrigin": "webapp"
+    },
+    "versions": {
+      "CxOne": "3.39.7",
+      "SAST": "9.7.3",
+      "KICS": "2.1.9"
+    }
+  },
+  "$schema": "https://docs.oasis-open.org/sarif/sarif/v2.1.0/cs01/schemas/sarif-external-property-file-schema-2.1.0.json"
+}
